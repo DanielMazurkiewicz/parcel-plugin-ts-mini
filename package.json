@@ -1,0 +1,32 @@
+{
+  "name": "parcel-plugin-ts-mini",
+  "version": "0.0.2",
+  "description": "Plugin for additional features of ts-mini framework (translations, UID...)",
+  "main": "src/index.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanielMazurkiewicz/parcel-plugin-ts-mini.git"
+  },
+  "peerDependencies": {
+    "parcel-bundler": "*"
+  },
+  "keywords": [
+    "parcel",
+    "ts-mini",
+    "i18n",
+    "i10n",
+    "lang",
+    "translation",
+    "typescript",
+    "ts",
+    "uid"
+  ],
+  "author": "Daniel Mazurkiewicz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DanielMazurkiewicz/parcel-plugin-ts-mini/issues"
+  },
+  "homepage": "https://github.com/DanielMazurkiewicz/parcel-plugin-ts-mini#readme"
+}
