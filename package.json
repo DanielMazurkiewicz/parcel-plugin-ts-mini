@@ -1,7 +1,7 @@
 {
   "name": "parcel-plugin-ts-mini",
-  "version": "0.0.2",
-  "description": "Plugin for additional features of ts-mini framework (translations, UID...)",
+  "version": "0.0.3",
+  "description": "Replacement for parcel native typescript support, it does additional things like handling translations or unique identifiers",
   "main": "src/index.js",
   "scripts": {
   },

@@ -4,7 +4,7 @@ This library is a replacement of parcel native Typescript support. It extends fu
 
 # Translations (name: iLang)
 
-Translations make use of redundant unused escape character \i (backslash i). All you have to do is to tag a tring that has to be translated with sequence \i:
+Translations make use of redundant unused escape character \i (backslash i). All you have to do is to tag a string that has to be translated with sequence \i:
 
 Example:
 ```javascript
