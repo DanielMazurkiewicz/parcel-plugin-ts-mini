@@ -2,7 +2,7 @@
 
 This library is a replacement of parcel native Typescript support. It extends functionality by providing additional languague features, like translations or unique identifiers
 
-# Translations (name: iLang)
+# Translations
 
 Translations make use of redundant unused escape character \i (backslash i). All you have to do is to tag a string that has to be translated with sequence \i:
 
@@ -15,9 +15,12 @@ const someText = "\i:That text will be translated";
 
 During compilation that will automatically add unique identifier for that text and will save that text to a translations.json file.
 
+NOTE: If you'll want to port this way of translations use a name 'tsmLang' for it.
+
+
 ## File translations.json
 
-In order to be able to use translations you have to place translations.json file in root directory of your project. At minimum file has to contain an ampty object.
+In order to be able to use translations you have to place translations.json file in root directory of your project. At minimum file has to contain an empty object.
 
 ```javascript
 {
