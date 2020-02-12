@@ -49,3 +49,32 @@ You can also get a languague code in your source code by placing \i\l: at begini
 const langCode = '\i\l:';
 
 ```
+
+# Fixed enumeration
+
+If you need numbers automaticly assigned to enumeration elements in a way that they will not change their value upon adding or removal or order change of enumeration elements then add something like this to your enum code:
+
+```javascript
+// @tsm: fixed
+enum MyEnumeration {
+    SOMETHING
+}
+
+```
+
+You can also define optionally a direction of numbering and starting number:
+
+```javascript
+// @tsm: fixed positive 5
+enum MyEnumeration1 {
+    SOMETHING
+}
+
+// @tsm: fixed negative
+enum MyEnumeration2 {
+    SOMETHING
+}
+
+```
+
+Starting number is automatically updated and always points next value that will be used upon adding new element
