@@ -43,7 +43,7 @@ module.exports = (source, ts, filePath, {env}) => {
     function visitor(node) {
 
         if (ts.isEnumDeclaration(node)) {
-            getTsmDirective(ts, source, node, (comment, isFixed, isPositive, startFrom) => {
+            getTsmDirective(ts, source, node, (comment, isFixed, isPositive, startFrom, startFromProperty) => {
 
                 if (isFixed !== 'fixed') return;
                 if (isPositive === 'false' || isPositive === 'negative') {
@@ -58,8 +58,12 @@ module.exports = (source, ts, filePath, {env}) => {
                     startFrom = parseInt(startFrom);
                 }
 
+                let startFromMember;
+
                 node.members.forEach(member => {
-                    if (!member.initializer) {
+                    if (member.name.escapedText === startFromProperty) {
+                        startFromMember = member;
+                    } else if (!member.initializer) {
                         // replacer.replace(member, member.getFullText() + ' = ' + startFrom);
                         replacer.addBehind(member, ' = ' + startFrom);
                         startFrom += isPositive;
@@ -68,8 +72,11 @@ module.exports = (source, ts, filePath, {env}) => {
 
                 replacer.replace(comment, '// @tsm: fixed ' + 
                     (isPositive > 0 ? 'positive ' : 'negative ') +
-                    startFrom
+                    startFrom +
+                    (startFromProperty ? ' ' + startFromProperty : '')
                 )
+                if (startFromMember)
+                    replacer.replace(startFromMember, startFromProperty + ' = ' + startFrom)
             })
         } 
 

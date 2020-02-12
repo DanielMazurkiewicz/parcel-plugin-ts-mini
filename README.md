@@ -77,4 +77,13 @@ enum MyEnumeration2 {
 
 ```
 
-Starting number is automatically updated and always points next value that will be used upon adding new element
+Starting number is automatically updated and always points next value that will be used upon adding new element. Starting number can be also passed to selected enumeration element:
+
+```javascript
+// @tsm: fixed positive 5 NAME_FOR_STARTING_NUMBER
+enum MyEnumeration1 {
+    SOMETHING,
+    
+    NAME_FOR_STARTING_NUMBER
+}
+```
