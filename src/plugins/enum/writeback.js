@@ -7,26 +7,7 @@
 
 
 const Replacer = require('../../utils/Replacer');
-
-const getTsmDirective = (ts, source, node, callback) => {
-    return ts.getLeadingCommentRanges(source, node.pos).some(comment => {
-        let text = source.substring(comment.pos, comment.end);
-        if (!text.startsWith('//')) return;
-        // const eol = text.indexOf('\n');
-        // if (eol < 0) return;
-        // text = text.substring(2, eol);
-        text = text.substr(2).trim();
-        if (!text.startsWith('@tsm:')) return;
-        text = text.substr(5).trim();
-    
-        const params = text.split(/\s+/);
-        params.unshift(comment)
-        callback.apply(undefined, params);
-    
-        return true;    
-    });
-}
-
+const getTsmCommands = require('../../utils/getTsmCommands');
 
 
 module.exports = (source, ts, filePath, {env}) => {
@@ -42,43 +23,71 @@ module.exports = (source, ts, filePath, {env}) => {
 
     function visitor(node) {
 
-        if (ts.isEnumDeclaration(node)) {
-            getTsmDirective(ts, source, node, (comment, isFixed, isPositive, startFrom, startFromProperty) => {
-
-                if (isFixed !== 'fixed') return;
-                if (isPositive === 'false' || isPositive === 'negative') {
-                    isPositive = -1;
-                } else {
-                    isPositive = 1;
+        const processEnum = (isPositive, startFrom, startFromProperty) => {
+            let startFromMember;
+            node.members.forEach(member => {
+                if (member.name.escapedText === startFromProperty) {
+                    startFromMember = member;
+                } else if (!member.initializer) {
+                    // replacer.replace(member, member.getFullText() + ' = ' + startFrom);
+                    replacer.addBehind(member, ' = ' + startFrom);
+                    startFrom += isPositive;
                 }
+            });
+            return {startFrom, startFromMember}
+        }
 
-                if (startFrom === undefined) {
-                    startFrom = isPositive;
-                } else {
-                    startFrom = parseInt(startFrom);
+        const processVariable = (isPositive, startFrom, startFromProperty) => {
+            let startFromMember;
+            node.declarationList.declarations.forEach(declaration => {
+                const name = declaration.name.escapedText;
+                if (name === startFromProperty) {
+                    startFromMember = declaration;
+                } else if (declaration.initializer.escapedText === 'NaN') {
+                    replacer.replace(declaration, name + ' = ' + startFrom);
+                    startFrom += isPositive;
                 }
-
-                let startFromMember;
-
-                node.members.forEach(member => {
-                    if (member.name.escapedText === startFromProperty) {
-                        startFromMember = member;
-                    } else if (!member.initializer) {
-                        // replacer.replace(member, member.getFullText() + ' = ' + startFrom);
-                        replacer.addBehind(member, ' = ' + startFrom);
-                        startFrom += isPositive;
-                    }
-                });
-
-                replacer.replace(comment, '// @tsm: fixed ' + 
-                    (isPositive > 0 ? 'positive ' : 'negative ') +
-                    startFrom +
-                    (startFromProperty ? ' ' + startFromProperty : '')
-                )
-                if (startFromMember)
-                    replacer.replace(startFromMember, startFromProperty + ' = ' + startFrom)
             })
-        } 
+            return {startFrom, startFromMember}
+        }
+
+        const process = (what) => (comment, isPositive, startFrom, startFromProperty) => {
+            if (isPositive === 'false' || isPositive === 'negative') {
+                isPositive = -1;
+            } else {
+                isPositive = 1;
+            }
+
+            if (startFrom === undefined) {
+                startFrom = isPositive;
+            } else {
+                startFrom = parseInt(startFrom);
+            }
+
+            const start = what(isPositive, startFrom, startFromProperty);
+            startFrom = start.startFrom;
+            const startFromMember = start.startFromMember;
+
+            replacer.replace(comment, '// @tsm fixed: ' + 
+                (isPositive > 0 ? 'positive ' : 'negative ') +
+                startFrom +
+                (startFromProperty ? ' ' + startFromProperty : '')
+            )
+            if (startFromMember)
+                replacer.replace(startFromMember, startFromProperty + ' = ' + startFrom)
+
+            return true;
+        }
+
+        if (ts.isEnumDeclaration(node)) {
+            getTsmCommands(ts, source, node)
+                .cmd('fixed', process(processEnum))
+                .run();
+        } else if (ts.isVariableStatement(node)) {
+            getTsmCommands(ts, source, node)
+                .cmd('fixed', process(processVariable))
+                .run();
+        }
 
         return ts.forEachChild(node, visitor);
     }

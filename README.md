@@ -55,7 +55,7 @@ const langCode = '\i\l:';
 If you need numbers automaticly assigned to enumeration elements in a way that they will not change their value upon adding or removal or order change of enumeration elements then add something like this to your enum code:
 
 ```javascript
-// @tsm: fixed
+// @tsm fixed:
 enum MyEnumeration {
     SOMETHING
 }
@@ -65,12 +65,12 @@ enum MyEnumeration {
 You can also define optionally a direction of numbering and starting number:
 
 ```javascript
-// @tsm: fixed positive 5
+// @tsm fixed: positive 5
 enum MyEnumeration1 {
     SOMETHING
 }
 
-// @tsm: fixed negative
+// @tsm fixed: negative
 enum MyEnumeration2 {
     SOMETHING
 }
@@ -80,10 +80,24 @@ enum MyEnumeration2 {
 Starting number is automatically updated and always points next value that will be used upon adding new element. Starting number can be also passed to selected enumeration element:
 
 ```javascript
-// @tsm: fixed positive 5 NAME_FOR_STARTING_NUMBER
+// @tsm fixed: positive 5 NAME_FOR_STARTING_NUMBER
 enum MyEnumeration1 {
     SOMETHING,
     
     NAME_FOR_STARTING_NUMBER
 }
+```
+
+## Fixed enumeration for variables and constants
+
+Fixed enumeration works also for constants and variables, in this case every element with "NaN" value will be assigned automatically a new value
+
+```javascript
+// @tsm fixed: negative -5 ERROR__$COUNT
+export const
+    ERROR__$COUNT = -5,
+    ERROR__SUCCESS = NaN,
+    ERROR__NOT_IMPLEMENTED = -1,
+    ERROR__FAIL = -2;
+
 ```
